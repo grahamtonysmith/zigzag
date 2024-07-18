@@ -2,17 +2,23 @@ package main
 
 import (
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
-const (
-	FILEPATH = "/home/grahamtonysmith/code/go-alg-zigzag/data/gc.csv"
+var (
+	PATH string
 )
 
+func init() {
+	flag.StringVar(&PATH, "path", "/path/to/csv", "filepath to csv")
+	flag.Parse()
+}
+
 func main() {
-	f, err := os.Open(FILEPATH)
+	f, err := os.Open(PATH)
 	if err != nil {
 		log.Fatalln("Unable to read CSV", err)
 	}
