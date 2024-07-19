@@ -1,46 +1,31 @@
 package main
 
 import (
-	"math/rand"
 	"net/http"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/opts"
-	"github.com/go-echarts/go-echarts/v2/types"
 )
 
-func generateLineItems() []opts.LineData {
-	items := make([]opts.LineData, 0)
-
-	for i := 0; i < 7; i++ {
-		items = append(items, opts.LineData{Value: rand.Intn(300)})
+func handler(w http.ResponseWriter, _ *http.Request) {
+	x := []string{
+		"2017-10-24",
+		"2017-10-25",
+		"2017-10-26",
+		"2017-10-27",
 	}
 
-	return items
-}
+	y := []opts.KlineData{
+		{Value: []int{20, 34, 10, 38}}, // open=20, close=34, low=10, high=38
+		{Value: []int{40, 35, 30, 50}},
+		{Value: []int{31, 38, 33, 44}},
+		{Value: []int{38, 15, 05, 42}},
+	}
 
-func httpserver(w http.ResponseWriter, _ *http.Request) {
-	smooth := true
-
-	line := charts.NewLine()
-
-	line.SetGlobalOptions(
-		charts.WithInitializationOpts(opts.Initialization{Theme: types.ThemeWesteros}),
-		charts.WithTitleOpts(opts.Title{
-			Title:    "Line example in Westeros theme",
-			Subtitle: "Line chart rendered by the http server this time",
-		}))
-
-	line.
-		SetXAxis([]string{"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}).
-		AddSeries("Category A", generateLineItems()).
-		AddSeries("Category B", generateLineItems()).
-		SetSeriesOptions(charts.WithLineChartOpts(opts.LineChart{Smooth: &smooth}))
-
-	line.Render(w)
+	charts.NewKLine().SetXAxis(x).AddSeries("GC", y).Render(w)
 }
 
 func main() {
-	http.HandleFunc("/", httpserver)
+	http.HandleFunc("/", handler)
 	http.ListenAndServe(":8000", nil)
 }
